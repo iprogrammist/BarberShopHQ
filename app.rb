@@ -10,10 +10,16 @@ class Client < ActiveRecord::Base
 	validates :name, presence: true, length: { minimum: 3 }
 	validates :phone, presence: true
 	validates :datestamp, presence: true
+	validates :barber, presence: true
 	validates :color, presence: true
 end
 
 class Barber < ActiveRecord::Base
+end
+
+class Contact < ActiveRecord::Base
+	validates :email, presence: true
+	validates :message, presence: true
 end
 
 before do
@@ -54,4 +60,29 @@ end
 get '/client/:id' do
 	@client = Client.find(params[:id])
 	erb :client
+end
+
+get '/contacts' do
+  @k = Contact.new		
+  erb :contacts
+end
+
+post '/contacts' do
+
+	@k = Contact.new params[:contact]
+	if @k.save
+		erb "<h2>Спасибо, мы свяжемся с вами в ближайшее время!</h2>"
+	else
+		@error = @k.errors.full_messages.first
+		erb :contacts
+	end
+end
+
+get '/list' do
+  @contacts = Contact.order('created_at DESC')
+  erb :list
+end
+
+get '/about' do
+  erb :about
 end
